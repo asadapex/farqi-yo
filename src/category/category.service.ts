@@ -24,7 +24,11 @@ export class CategoryService {
 
   async findAll() {
     try {
-      return await this.prisma.category.findMany();
+      return await this.prisma.category.findMany({
+        include: {
+          Product: true
+        }
+      });
     } catch (error) {
       if (error != InternalServerErrorException) {
         throw error
@@ -38,6 +42,7 @@ export class CategoryService {
     try {
       const category = await this.prisma.category.findUnique({
         where: { id },
+        include: { Product: true }
       });
       if (!category) {
         throw new NotFoundException(`Category with ID ${id} not found`);

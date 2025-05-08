@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateRegionDto } from './dto/create-region.dto';
 import { UpdateRegionDto } from './dto/update-region.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -8,6 +8,9 @@ export class RegionService {
   constructor(private readonly prisma: PrismaService) { }
   async create(createRegionDto: CreateRegionDto) {
     try {
+      let one = await this.prisma.region.findFirst({where: {name: createRegionDto.name}})
+      if(one)
+        throw new BadRequestException("Region already exists")
       let newRegion = await this.prisma.region.create({ data: createRegionDto })
       return newRegion
     } catch (error) {

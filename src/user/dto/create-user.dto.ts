@@ -9,25 +9,25 @@ export enum UserRole {
 }
 
 export class CreateUserDto {
-    @ApiProperty({ example: 'Ali Valiyev', description: 'Full name of the user' })
+    @ApiProperty({ example: 'Ali Valiyev'})
     @IsString()
     @IsNotEmpty()
     name: string
 
-    @ApiProperty({ example: '+998901234567', description: 'Phone number in Uzbekistan format' })
+    @ApiProperty({ example: '+998901234567'})
     @IsPhoneNumber('UZ')
     phone: string
 
-    @ApiProperty({ example: 'mysecret123', description: 'Password (minimum 6 characters)' })
+    @ApiProperty({ example: 'mysecret123'})
     @IsString()
     @MinLength(6)
     password: string
 
-    @ApiProperty({ example: 'admin', enum: UserRole, description: 'Role of the user (admin, manager, waiter)' })
+    @ApiProperty({ example: 'admin', enum: UserRole })
     @IsEnum(UserRole, { message: 'role must be one of: ADMIN OWNER WAITER CASHIER' })
     role: UserRole
 
-    @ApiProperty({ example: 1, description: 'ID of the restaurant the user is associated with' })
+    @ApiProperty({ example: 1})
     @IsNumber()
     restaurantId: number
 }
