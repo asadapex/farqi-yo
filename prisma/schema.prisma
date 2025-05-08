@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  OWNER
+  CASHIER
+  WAITER
+}
+
+enum OrderStatus {
+  PAID
+  PENDING
+  DEBT
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  name         String
+  phone        String     @unique
+  password     String
+  role         UserRole
+  balance      Float      @default(0)
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+  Order        Order[]
+  Withdraw     Withdraw[]
+}
+
+model Restaurant {
+  id       Int        @id @default(autoincrement())
+  name     String
+  address  String
+  phone    String     @unique
+  tip      Int
+  region   Region     @relation(fields: [regionId], references: [id])
+  isActive Boolean
+  regionId Int
+  User     User[]
+  Category Category[]
+  Product  Product[]
+  Order    Order[]
+  Withdraw Withdraw[]
+  Debt     Debt[]
+}
+
+model Region {
+  id         Int          @id @default(autoincrement())
+  name       String
+  Restaurant Restaurant[]
+}
+
+model Category {
+  id           Int        @id @default(autoincrement())
+  name         String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+  isActive     Boolean
+  Product      Product[]
+}
+
+model Product {
+  id           Int        @id @default(autoincrement())
+  name         String
+  price        Int
+  category     Category   @relation(fields: [categoryId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  categoryId   Int
+  restaurantId Int
+  isActive     Boolean
+  orders       Order[]    @relation("OrderItem")
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  product      Product[]   @relation("OrderItem")
+  quantity     Int
+  user         User        @relation(fields: [userId], references: [id])
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  status       OrderStatus
+  restaurantId Int
+  Withdraw     Withdraw[]
+  userId       Int
+  Debt         Debt[]
+}
+
+model Withdraw {
+  id           Int        @id @default(autoincrement())
+  order        Order      @relation(fields: [orderId], references: [id])
+  orderId      Int
+  amount       Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+}
+
+model Debt {
+  id           Int        @id @default(autoincrement())
+  order        Order      @relation(fields: [orderId], references: [id])
+  orderId      Int
+  amount       Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+}
