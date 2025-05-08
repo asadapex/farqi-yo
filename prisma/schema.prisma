@@ -80,20 +80,30 @@ model Product {
   categoryId   Int
   restaurantId Int
   isActive     Boolean
-  orders       Order[]    @relation("OrderItem")
+
+  OrderItem OrderItem[]
 }
 
 model Order {
-  id           Int         @id @default(autoincrement())
-  product      Product[]   @relation("OrderItem")
-  quantity     Int
-  user         User        @relation(fields: [userId], references: [id])
-  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  id         Int         @id @default(autoincrement())
+  user       User        @relation(fields: [userId], references: [id])
+  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
+  items      OrderItem[] // <--- bu yangi
+
   status       OrderStatus
   restaurantId Int
-  Withdraw     Withdraw[]
   userId       Int
+  Withdraw     Withdraw[]
   Debt         Debt[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int
 }
 
 model Withdraw {
