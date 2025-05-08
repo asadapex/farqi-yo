@@ -1,18 +1,16 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
-export class CategoryService {
+export class ProductService {
   constructor(private readonly prisma: PrismaService) { }
-
-  async create(createCategoryDto: CreateCategoryDto) {
+  async create(createProductDto: CreateProductDto) {
     try {
-      const newCategory = await this.prisma.category.create({
-        data: createCategoryDto,
-      });
-      return newCategory;
+      let newProduct = await this.prisma.product.create({ data: createProductDto })
+      return newProduct
     } catch (error) {
       if (error != InternalServerErrorException) {
         throw error
@@ -24,7 +22,8 @@ export class CategoryService {
 
   async findAll() {
     try {
-      return await this.prisma.category.findMany();
+      let data = await this.prisma.product.findMany()
+      return data
     } catch (error) {
       if (error != InternalServerErrorException) {
         throw error
@@ -36,13 +35,11 @@ export class CategoryService {
 
   async findOne(id: number) {
     try {
-      const category = await this.prisma.category.findUnique({
-        where: { id },
-      });
-      if (!category) {
-        throw new NotFoundException(`Category with ID ${id} not found`);
+      let one = await this.prisma.product.findUnique({ where: { id } })
+      if (!one) {
+        throw new NotFoundException("Product not found")
       }
-      return category;
+      return one
     } catch (error) {
       if (error != InternalServerErrorException) {
         throw error
@@ -52,19 +49,14 @@ export class CategoryService {
     }
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: number, updateProductDto: UpdateProductDto) {
     try {
-      const existing = await this.prisma.category.findUnique({ where: { id } });
-      if (!existing) {
-        throw new NotFoundException(`Category with ID ${id} not found`);
+      let one = await this.prisma.product.findUnique({ where: { id } })
+      if (!one) {
+        throw new NotFoundException("Product not found")
       }
-
-      const updated = await this.prisma.category.update({
-        where: { id },
-        data: updateCategoryDto,
-      });
-
-      return updated;
+      let updated = await this.prisma.product.update({ where: { id }, data: updateProductDto })
+      return updated
     } catch (error) {
       if (error != InternalServerErrorException) {
         throw error
@@ -76,16 +68,12 @@ export class CategoryService {
 
   async remove(id: number) {
     try {
-      const existing = await this.prisma.category.findUnique({ where: { id } });
-      if (!existing) {
-        throw new NotFoundException(`Category with ID ${id} not found`);
+      let one = await this.prisma.product.findUnique({ where: { id } })
+      if (!one) {
+        throw new NotFoundException("Product not found")
       }
-
-      await this.prisma.category.delete({
-        where: { id },
-      });
-
-      return { message: `Category with ID ${id} deleted successfully` };
+      let deleted = await this.prisma.product.delete({ where: { id } })
+      return one
     } catch (error) {
       if (error != InternalServerErrorException) {
         throw error
