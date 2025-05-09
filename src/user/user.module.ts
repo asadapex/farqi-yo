@@ -4,10 +4,12 @@ import { UserController } from './user.controller';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [JwtModule.register({
-    global: true,
-    secret: "farq-bor"
-  })],
+  imports: [
+    JwtModule.register({
+      global: true,
+      secret: 'apex',
+    }),
+  ],
   controllers: [UserController],
   providers: [UserService],
 })
