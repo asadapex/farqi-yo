@@ -28,17 +28,21 @@ export class DebtController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.debtService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: Request) {
+    return this.debtService.findOne(+id, req);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDebtDto: UpdateDebtDto) {
-    return this.debtService.update(+id, updateDebtDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateDebtDto: UpdateDebtDto,
+    @Req() req: Request,
+  ) {
+    return this.debtService.update(+id, updateDebtDto, req);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.debtService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: Request) {
+    return this.debtService.remove(+id, req);
   }
 }
