@@ -111,7 +111,7 @@ export class UserService {
       if (!isMatch) {
         throw new UnauthorizedException('Telefon raqami yoki parol notogri');
       }
-      let token = this.jwt.sign({ id: user.id, role: user.role })
+      let token = this.jwt.sign({ id: user.id, role: user.role, restaurantId: user.restaurantId })
       return { token }
     } catch (error) {
       if (error != InternalServerErrorException) {
