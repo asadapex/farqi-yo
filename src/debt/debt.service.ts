@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateDebtDto } from './dto/create-debt.dto';
 import { UpdateDebtDto } from './dto/update-debt.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -30,6 +34,7 @@ export class DebtService {
       const all = await this.prisma.debt.findMany({
         where: { restaurantId: req['restaurant-id'] },
       });
+      return all;
     } catch (error) {
       if (error != InternalServerErrorException) {
         throw error;
@@ -41,15 +46,70 @@ export class DebtService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} debt`;
+  async findOne(id: number, req: Request) {
+    try {
+      const one = await this.prisma.debt.findFirst({
+        where: { id, restaurantId: req['restaurant-id'] },
+      });
+      if (!one) {
+        throw new NotFoundException({ message: 'Debt not found' });
+      }
+      return one;
+    } catch (error) {
+      if (error != InternalServerErrorException) {
+        throw error;
+      }
+      console.log(error);
+      throw new InternalServerErrorException({
+        message: 'Something went wrong',
+      });
+    }
   }
 
-  update(id: number, updateDebtDto: UpdateDebtDto) {
-    return `This action updates a #${id} debt`;
+  async update(id: number, updateDebtDto: UpdateDebtDto, req: Request) {
+    try {
+      const one = await this.prisma.debt.findFirst({
+        where: { id, restaurantId: req['restaurant-id'] },
+      });
+      if (!one) {
+        throw new NotFoundException({ message: 'Debt not found' });
+      }
+
+      const updated = await this.prisma.debt.update({
+        where: { id },
+        data: updateDebtDto,
+      });
+      return updated;
+    } catch (error) {
+      if (error != InternalServerErrorException) {
+        throw error;
+      }
+      console.log(error);
+      throw new InternalServerErrorException({
+        message: 'Something went wrong',
+      });
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} debt`;
+  async remove(id: number, req: Request) {
+    try {
+      const one = await this.prisma.debt.findFirst({
+        where: { id, restaurantId: req['restaurant-id'] },
+      });
+      if (!one) {
+        throw new NotFoundException({ message: 'Debt not found' });
+      }
+
+      const deleted = await this.prisma.debt.delete({ where: { id } });
+      return deleted;
+    } catch (error) {
+      if (error != InternalServerErrorException) {
+        throw error;
+      }
+      console.log(error);
+      throw new InternalServerErrorException({
+        message: 'Something went wrong',
+      });
+    }
   }
 }
